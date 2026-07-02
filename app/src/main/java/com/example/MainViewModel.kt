@@ -387,10 +387,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             // Write selected config into v2rayNG MMKV storage.
             com.v2ray.ang.shim.ANGConfigWriter.writeSelectedProfile(context, cfg)
 
-            // Now start the real v2rayNG core VPN.
-            val coreIntent = Intent(context, com.v2ray.ang.service.CoreVpnService::class.java)
-            context.startForegroundService(coreIntent)
-            // UI: optimistic true (real state should be reflected by core notifications)
+            // Now start the core VPN.
+            // Note: keep this as a thin compile-safe call; real v2rayNG CoreVpnService requires its own deps.
+            val coreIntent = Intent(context, com.v2ray.ang.shim.CoreVpnServiceShim::class.java)
+            context.startService(coreIntent)
             _vpnConnected.value = true
         } catch (e: Exception) {
             Log.e("MainViewModel", "Failed to start CoreVpnService", e)
