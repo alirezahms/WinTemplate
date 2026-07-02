@@ -1,0 +1,6 @@
+{
+  "name": "Win2ray",
+  "description": "An elegant, modern, and highly secure V2Ray VPN client with live ping diagnostics and split-tunneling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

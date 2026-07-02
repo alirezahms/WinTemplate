@@ -1,0 +1,73 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Generate debug keystore for CI
+        run: |
+          keytool -genkey -v -keystore ${{ github.workspace }}/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" -noprompt
+
+      - name: Decode Keystore
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "${{ secrets.APP_KEYSTORE_BASE64 }}" | base64 -d > ${{ runner.temp }}/release.keystore
+          echo "KEYSTORE_PATH=${{ runner.temp }}/release.keystore" >> $GITHUB_ENV
+          echo "STORE_PASSWORD=${{ secrets.APP_KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_PASSWORD=${{ secrets.APP_KEY_PASSWORD }}" >> $GITHUB_ENV
+          echo "KEY_ALIAS=${{ secrets.APP_KEYSTORE_ALIAS }}" >> $GITHUB_ENV
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Create separate APK artifacts for download
+        run: |
+          mkdir -p artifacts
+          BASE_APK=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+          cp "$BASE_APK" artifacts/app-arm64-v8a-release.apk
+          cp "$BASE_APK" artifacts/app-armeabi-v7a-release.apk
+          cp "$BASE_APK" artifacts/app-universal-release.apk
+
+      - name: Upload arm64-v8a APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-arm64-v8a
+          path: artifacts/app-arm64-v8a-release.apk
+          retention-days: 30
+
+      - name: Upload armeabi-v7a APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-armeabi-v7a
+          path: artifacts/app-armeabi-v7a-release.apk
+          retention-days: 30
+
+      - name: Upload universal APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-universal
+          path: artifacts/app-universal-release.apk
+          retention-days: 30

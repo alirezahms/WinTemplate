@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyApplication" parent="android:Theme.DeviceDefault.NoActionBar">
+        <!-- Disable default animated icon to go directly to launcher -->
+        <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <!-- Set splash background to match launcher's deep space purple background -->
+        <item name="android:windowSplashScreenBackground">#07050F</item>
+    </style>
+</resources>
