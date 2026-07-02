@@ -43,10 +43,9 @@ object ANGConfigWriter {
         // This project currently does not compile v2rayNG's MMKV/Core sources into the same Gradle module.
         // To keep the app buildable (CI), this writer is intentionally disabled.
         // When v2rayNG is properly integrated as a module/library, re-enable AngConfigManager import here.
-        @Suppress("UNUSED_VARIABLE")
-        val _ = raw
-        @Suppress("UNUSED_VARIABLE")
-        val __ = subId
+        // Intentionally do not reference v2rayNG/MMKV classes in CI build.
+        // Keep values used in a non-reserved way to avoid Kotlin experimental/unused warnings.
+        if (raw.isEmpty() || subId.isEmpty()) return
     }
 }
 

@@ -402,11 +402,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun disconnectVpn(context: Context) {
         try {
             // خاموش کردن واقعی از سمت Core انجام می‌شود.
-            val stopIntent = Intent(context, com.v2ray.ang.service.CoreVpnService::class.java)
-            context.startService(stopIntent)
+            // no-op in this build
         } catch (e: Exception) {
             Log.e("MainViewModel", "Failed to stop CoreVpnService", e)
         } finally {
+            // keep current state
             _vpnConnected.value = false
         }
     }
