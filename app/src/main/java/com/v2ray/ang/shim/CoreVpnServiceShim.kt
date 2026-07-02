@@ -17,10 +17,7 @@ class CoreVpnServiceShim : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Forwarding to real v2rayNG CoreVpnService is intentionally disabled here
-        // because this project doesn't compile the v2rayNG module sources as part of the same Gradle build.
-        // Keep the app buildable on CI.
-        // TODO: If/when v2rayNG is integrated as a module/library, restore real forwarding.
+        // Forwarding disabled for now: v2rayNG core is not wired into this Gradle build.
         return START_STICKY
     }
 }
