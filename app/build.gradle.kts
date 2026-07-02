@@ -13,6 +13,24 @@ android {
   namespace = "com.example"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
+  sourceSets {
+    getByName("main") {
+      java.srcDirs(
+        "src/main/java",
+        "${projectDir}/../app/v2rayNG/V2rayNG/app/src/main/java"
+      )
+      res.srcDirs(
+        "src/main/res",
+        "${projectDir}/../app/v2rayNG/V2rayNG/app/src/main/res"
+      )
+      assets.srcDirs(
+        "src/main/assets",
+        "${projectDir}/../app/v2rayNG/V2rayNG/app/src/main/assets"
+      )
+    }
+  }
+
+
   defaultConfig {
     applicationId = "com.example"
     minSdk = 24

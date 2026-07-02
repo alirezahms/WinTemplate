@@ -376,20 +376,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun connectVpn(context: Context) {
-        _vpnConnected.value = true
-        val intent = Intent(context, SimpleVpnService::class.java).apply {
-            action = SimpleVpnService.ACTION_CONNECT
+        try {
+            val cfg = _selectedConfig.value
+            if (cfg == null) {
+                _vpnConnected.value = false
+                Log.e("MainViewModel", "No selected v2ray config")
+                return
+            }
+
+            // Write selected config into v2rayNG MMKV storage.
+            com.v2ray.ang.shim.ANGConfigWriter.writeSelectedProfile(context, cfg)
+
+            // Now start the real v2rayNG core VPN.
+            val coreIntent = Intent(context, com.v2ray.ang.service.CoreVpnService::class.java)
+            context.startForegroundService(coreIntent)
+        } catch (e: Exception) {
+            Log.e("MainViewModel", "Failed to start CoreVpnService", e)
+            _vpnConnected.value = false
         }
-        context.startService(intent)
     }
 
+
     fun disconnectVpn(context: Context) {
-        _vpnConnected.value = false
-        val intent = Intent(context, SimpleVpnService::class.java).apply {
-            action = SimpleVpnService.ACTION_DISCONNECT
+        try {
+            // خاموش کردن واقعی از سمت Core انجام می‌شود.
+            val stopIntent = Intent(context, com.v2ray.ang.service.CoreVpnService::class.java)
+            context.startService(stopIntent)
+        } catch (e: Exception) {
+            Log.e("MainViewModel", "Failed to stop CoreVpnService", e)
+        } finally {
+            _vpnConnected.value = false
         }
-        context.startService(intent)
     }
+
 
     // App Tunneling / Split Tunneling logic
     private fun loadInstalledApps() {
