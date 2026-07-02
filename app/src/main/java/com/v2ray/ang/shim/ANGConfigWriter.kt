@@ -40,24 +40,20 @@ object ANGConfigWriter {
 
         // Import as batch with append=false to keep only the currently selected set.
         // append=true would accumulate; for simplicity we reset to avoid stale configs.
+        // AngConfigManager.importBatchConfig is located in com.v2ray.ang.handler.AngConfigManager
         val result = com.v2ray.ang.handler.AngConfigManager.importBatchConfig(
             server = raw,
             subid = subId,
             append = false
         )
 
-        // 3) AngConfigManager.importBatchConfig will internally call MmkvManager.setSelectServer()
-        //    after matching a profile. However, if matching fails, SELECTED_SERVER might remain old.
-        //    So we force select by decoding latest stored config for the subId server list.
-        //
-        //    Best-effort: select first available profile in that server list.
+        // Best-effort: after import, ensure selected server exists.
         val serverList = com.v2ray.ang.handler.MmkvManager.decodeServerList(subId)
         val guidToSelect = serverList.firstOrNull { it.isNotBlank() } ?: com.v2ray.ang.handler.MmkvManager.getSelectServer()
         if (!guidToSelect.isNullOrBlank()) {
             com.v2ray.ang.handler.MmkvManager.setSelectServer(guidToSelect)
         }
 
-        // result is currently not used, but import succeeded => we are ready to start CoreVpnService.
         @Suppress("UNUSED_VARIABLE")
         val _ = result
     }

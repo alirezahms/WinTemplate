@@ -390,6 +390,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             // Now start the real v2rayNG core VPN.
             val coreIntent = Intent(context, com.v2ray.ang.service.CoreVpnService::class.java)
             context.startForegroundService(coreIntent)
+            // UI: optimistic true (real state should be reflected by core notifications)
+            _vpnConnected.value = true
         } catch (e: Exception) {
             Log.e("MainViewModel", "Failed to start CoreVpnService", e)
             _vpnConnected.value = false

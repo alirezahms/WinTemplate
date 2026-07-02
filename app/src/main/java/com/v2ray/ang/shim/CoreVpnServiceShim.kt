@@ -18,9 +18,7 @@ class CoreVpnServiceShim : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // Forward start to the real CoreVpnService
-        val realIntent = Intent(this, CoreVpnService::class.java).apply {
-            putExtras(intent)
-        }
+        val realIntent = Intent(this, CoreVpnService::class.java)
         ContextCompat.startForegroundService(this, realIntent)
         return START_STICKY
     }
